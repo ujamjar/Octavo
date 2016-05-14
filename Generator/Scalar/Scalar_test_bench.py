@@ -4,7 +4,7 @@ import string
 import os
 import sys
 
-from Misc import misc, parameters_misc
+from Misc import misc, parameters_misc, octavo_files
 
 default_bench = "Hailstone/hailstone"
 install_base = misc.base_install_path()
@@ -209,59 +209,7 @@ TESTBENCH="./$${TOP_LEVEL_MODULE}.v"
 LPM_LIBRARY="${quartus_base_path}/quartus/eda/sim_lib/220model.v"
 ALT_LIBRARY="${quartus_base_path}/quartus/eda/sim_lib/altera_mf.v"
 
-OCTAVO="$$INSTALL_BASE/Octavo/Misc/params.v \\
-        $$INSTALL_BASE/Octavo/Misc/delay_line.v \\
-        $$INSTALL_BASE/Octavo/Misc/Address_Decoder.v \\
-        $$INSTALL_BASE/Octavo/Misc/Address_Translator.v \\
-        $$INSTALL_BASE/Octavo/Misc/Addressed_Mux.v \\
-        $$INSTALL_BASE/Octavo/Misc/Translated_Addressed_Mux.v \\
-        $$INSTALL_BASE/Octavo/Misc/Instruction_Annuller.v \\
-        $$INSTALL_BASE/Octavo/Misc/Thread_Number.v \\
-        $$INSTALL_BASE/Octavo/Misc/Instr_Decoder.v \\
-        $$INSTALL_BASE/Octavo/DataPath/ALU/AddSub_Carry_Select.v \\
-        $$INSTALL_BASE/Octavo/DataPath/ALU/AddSub_Ripple_Carry.v \\
-        $$INSTALL_BASE/Octavo/DataPath/ALU/Mult.v \\
-        $$INSTALL_BASE/Octavo/DataPath/ALU/Bitwise.v \\
-        $$INSTALL_BASE/Octavo/DataPath/ALU/ALU.v \\
-        $$INSTALL_BASE/Octavo/DataPath/DataPath.v \\
-        $$INSTALL_BASE/Octavo/ControlPath/Controller.v \\
-        $$INSTALL_BASE/Octavo/ControlPath/ControlPath.v \\
-        $$INSTALL_BASE/Octavo/Memory/RAM_SDP.v \\
-        $$INSTALL_BASE/Octavo/Memory/RAM_SDP_no_fw.v \\
-        $$INSTALL_BASE/Octavo/Memory/Write_Enable.v \\
-        $$INSTALL_BASE/Octavo/Memory/Memory.v \\
-        $$INSTALL_BASE/Octavo/Addressing/Address_Adder.v \\
-        $$INSTALL_BASE/Octavo/Addressing/Addressing_Mapped_AB.v \\
-        $$INSTALL_BASE/Octavo/Addressing/Addressing_Mapped_D.v \\
-        $$INSTALL_BASE/Octavo/Addressing/Addressing_Thread_Number.v \\
-        $$INSTALL_BASE/Octavo/Addressing/Addressing.v \\
-        $$INSTALL_BASE/Octavo/Addressing/Address_Translation.v \\
-        $$INSTALL_BASE/Octavo/Addressing/Default_Offset.v \\
-        $$INSTALL_BASE/Octavo/Addressing/Increment_Adder.v \\
-        $$INSTALL_BASE/Octavo/Addressing/Increments.v \\
-        $$INSTALL_BASE/Octavo/Addressing/Programmed_Offsets.v \\
-        $$INSTALL_BASE/Octavo/Addressing/Write_Priority.v \\
-        $$INSTALL_BASE/Octavo/Addressing/Write_Synchronize.v \\
-        $$INSTALL_BASE/Octavo/Branching/Branch_Check_Mapped.v \\
-        $$INSTALL_BASE/Octavo/Branching/Branch_Check.v \\
-        $$INSTALL_BASE/Octavo/Branching/Branch_Condition.v \\
-        $$INSTALL_BASE/Octavo/Branching/Branch_Destination.v \\
-        $$INSTALL_BASE/Octavo/Branching/Branch_Folding.v \\
-        $$INSTALL_BASE/Octavo/Branching/Branching_Flags.v \\
-        $$INSTALL_BASE/Octavo/Branching/Branching_Thread_Number.v \\
-        $$INSTALL_BASE/Octavo/Branching/Branch_Origin.v \\
-        $$INSTALL_BASE/Octavo/Branching/Branch_Origin_Check.v \\
-        $$INSTALL_BASE/Octavo/Branching/Branch_Cancel.v \\
-        $$INSTALL_BASE/Octavo/Branching/Branch_Prediction.v \\
-        $$INSTALL_BASE/Octavo/Branching/Branch_Prediction_Enable.v \\
-        $$INSTALL_BASE/Octavo/Branching/OR_Reducer.v \\
-        $$INSTALL_BASE/Octavo/IO/EmptyFullBit.v \\
-        $$INSTALL_BASE/Octavo/IO/IO_Active.v \\
-        $$INSTALL_BASE/Octavo/IO/IO_All_Ready.v \\
-        $$INSTALL_BASE/Octavo/IO/IO_Check.v \\
-        $$INSTALL_BASE/Octavo/IO/IO_Read.v \\
-        $$INSTALL_BASE/Octavo/IO/IO_Write.v \\
-        $$INSTALL_BASE/Octavo/IO/Port_Active.v \\
+OCTAVO="$$INSTALL_BASE/Octavo/${octavo_files} \\
         $$INSTALL_BASE/Octavo/Octavo/Scalar.v \\
         ../${CPU_NAME}.v \\
 "
@@ -281,17 +229,43 @@ grep AOUT LOG | sed -e's/# AOUT:\s*//' > output
     parameters["default_bench"]     = default_bench
     parameters["install_base"]      = install_base
     parameters["quartus_base_path"] = quartus_base_path
+    parameters["octavo_files"]      = string.join(octavo_files.all_files, 
+                                                  " \\\n        $INSTALL_BASE/Octavo/")
     return test_bench_script_template.substitute(parameters)
 
+def file_list(parameters, install_base):
+  files = octavo_files.all_files + ["Octavo/Scalar.v" ]
+  files = map(lambda f: install_base + "/Octavo/" + f + "\n", files)
+  files = files + ["../" + parameters["CPU_NAME"] + ".v\n"]
+  return string.join(files, "")
+
+def test_bench_script_icarus(parameters):
+  test_bench_template = string.Template(
+"""
+rm a.out
+TOP_LEVEL_MODULE="${CPU_NAME}_test_bench"
+TESTBENCH="./$${TOP_LEVEL_MODULE}.v"
+LPM_LIBRARY="${quartus_base_path}/quartus/eda/sim_lib/220model.v"
+ALT_LIBRARY="${quartus_base_path}/quartus/eda/sim_lib/altera_mf.v"
+iverilog $$LPM_LIBRARY $$ALT_LIBRARY -ffile_list.txt $$TESTBENCH -s $$TOP_LEVEL_MODULE
+./a.out
+""")
+  return test_bench_template.substitute(parameters)
+
 def main(parameters = {}):
-    name                = parameters["CPU_NAME"]
-    test_bench_name     = name + "_" + misc.bench_name
-    test_bench_file     = test_bench(parameters)
-    test_bench_run      = test_bench_script(parameters)
-    test_bench_dir      = os.path.join(os.getcwd(), misc.bench_name)
+    name                 = parameters["CPU_NAME"]
+    test_bench_name      = name + "_" + misc.bench_name
+    test_bench_file      = test_bench(parameters)
+    test_bench_run       = test_bench_script(parameters)
+    test_bench_run_icarus= test_bench_script_icarus(parameters)
+    test_bench_dir       = os.path.join(os.getcwd(), misc.bench_name)
+    test_bench_file_list = file_list(parameters, install_base)
     misc.write_file(test_bench_dir, test_bench_name + ".v", test_bench_file)
     misc.write_file(test_bench_dir, "run_" + misc.bench_name, test_bench_run)
     misc.make_file_executable(test_bench_dir, "run_" + misc.bench_name)
+    misc.write_file(test_bench_dir, "file_list.txt", str(test_bench_file_list))
+    misc.write_file(test_bench_dir, "run_" + misc.bench_name + "_icarus", test_bench_run_icarus)
+    misc.make_file_executable(test_bench_dir, "run_" + misc.bench_name + "_icarus")
     
 if __name__ == "__main__":
     parameters          = parameters_misc.parse_cmdline(sys.argv[1:])

@@ -2,7 +2,7 @@
 import string
 import random
 
-from Misc import misc
+from Misc import misc, octavo_files
 
 install_base = misc.base_install_path()
 
@@ -78,58 +78,7 @@ set_global_assignment -name FLOW_DISABLE_ASSEMBLER ON
 set_global_assignment -name SMART_RECOMPILE ON
 set_global_assignment -name NUM_PARALLEL_PROCESSORS ${QUARTUS_NUM_PARALLEL_PROCESSORS}
 set_global_assignment -name SDC_FILE ${install_base}/Octavo/Misc/timing.sdc
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Misc/params.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Misc/delay_line.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Misc/Address_Decoder.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Misc/Address_Translator.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Misc/Addressed_Mux.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Misc/Translated_Addressed_Mux.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Misc/Instruction_Annuller.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Misc/Instr_Decoder.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Misc/Thread_Number.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/DataPath/ALU/AddSub_Carry_Select.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/DataPath/ALU/AddSub_Ripple_Carry.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/DataPath/ALU/Mult.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/DataPath/ALU/Bitwise.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/DataPath/ALU/ALU.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/DataPath/DataPath.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/ControlPath/Controller.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/ControlPath/ControlPath.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/IO/Port_Active.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/IO/IO_Active.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/IO/IO_All_Ready.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/IO/IO_Check.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/IO/IO_Read.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/IO/IO_Write.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Branching/Branch_Check_Mapped.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Branching/Branch_Check.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Branching/Branch_Condition.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Branching/Branch_Destination.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Branching/Branch_Folding.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Branching/Branching_Flags.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Branching/Branching_Thread_Number.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Branching/Branch_Origin.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Branching/Branch_Origin_Check.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Branching/Branch_Cancel.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Branching/Branch_Prediction.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Branching/Branch_Prediction_Enable.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Branching/OR_Reducer.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Addressing/Address_Adder.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Addressing/Addressing_Mapped_AB.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Addressing/Addressing_Mapped_D.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Addressing/Addressing_Thread_Number.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Addressing/Addressing.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Addressing/Address_Translation.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Addressing/Default_Offset.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Addressing/Increment_Adder.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Addressing/Increments.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Addressing/Programmed_Offsets.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Addressing/Write_Priority.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Addressing/Write_Synchronize.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Memory/RAM_SDP.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Memory/RAM_SDP_no_fw.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Memory/Write_Enable.v
-set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Memory/Memory.v
+${octavo_files}
 set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Octavo/Scalar.v
 set_global_assignment -name VERILOG_FILE ${install_base}/Octavo/Octavo/SIMD.v
 set_global_assignment -name VERILOG_FILE ${install_base}/Harness/output_register.v
@@ -268,6 +217,23 @@ ${SIMD_PARTITIONS}
 # ---------------------------------
 """)
     all_parameters["install_base"] = install_base
+    all_parameters["octavo_files"] = string.join( 
+        map(lambda f: \
+                ("set_global_assignment -name VERILOG_FILE " + 
+                install_base + "/Octavo/" + f), \
+            # keep the file order similar to previous version.
+            # octavo_files.all_files would probably work fine here as well.
+            #
+            # Thread_Number + PortActive are in a different order anyway
+            # EmptyFullBit was excluded before.
+            (octavo_files.misc + 
+            octavo_files.data_path + 
+            octavo_files.control_path + 
+            octavo_files.io + 
+            octavo_files.branching + 
+            octavo_files.addressing + 
+            octavo_files.memory)),
+        "\n")
     
     if all_parameters["PARTITION_SCALAR"] == True:
         scalar_module_partition = create_Scalar_partition(all_parameters)

@@ -4,7 +4,7 @@ import string
 import os
 import sys
 
-from Misc import misc, parameters_misc
+from Misc import misc, parameters_misc, octavo_files
 
 bench_dir           = "FIR_Filter"
 bench_name          = "fir_filter"
@@ -241,59 +241,7 @@ TESTBENCH="./$${TOP_LEVEL_MODULE}.v"
 LPM_LIBRARY="${quartus_base_path}/linux/quartus/eda/sim_lib/220model.v"
 ALT_LIBRARY="${quartus_base_path}/linux/quartus/eda/sim_lib/altera_mf.v"
 
-OCTAVO="$$INSTALL_BASE/Octavo/Misc/params.v \\
-        $$INSTALL_BASE/Octavo/Misc/delay_line.v \\
-        $$INSTALL_BASE/Octavo/Misc/Address_Decoder.v \\
-        $$INSTALL_BASE/Octavo/Misc/Address_Translator.v \\
-        $$INSTALL_BASE/Octavo/Misc/Addressed_Mux.v \\
-        $$INSTALL_BASE/Octavo/Misc/Translated_Addressed_Mux.v \\
-        $$INSTALL_BASE/Octavo/Misc/Instruction_Annuller.v \\
-        $$INSTALL_BASE/Octavo/Misc/Thread_Number.v \\
-        $$INSTALL_BASE/Octavo/Misc/Instr_Decoder.v \\
-        $$INSTALL_BASE/Octavo/DataPath/ALU/AddSub_Carry_Select.v \\
-        $$INSTALL_BASE/Octavo/DataPath/ALU/AddSub_Ripple_Carry.v \\
-        $$INSTALL_BASE/Octavo/DataPath/ALU/Mult.v \\
-        $$INSTALL_BASE/Octavo/DataPath/ALU/Bitwise.v \\
-        $$INSTALL_BASE/Octavo/DataPath/ALU/ALU.v \\
-        $$INSTALL_BASE/Octavo/DataPath/DataPath.v \\
-        $$INSTALL_BASE/Octavo/ControlPath/Controller.v \\
-        $$INSTALL_BASE/Octavo/ControlPath/ControlPath.v \\
-        $$INSTALL_BASE/Octavo/Memory/RAM_SDP.v \\
-        $$INSTALL_BASE/Octavo/Memory/RAM_SDP_no_fw.v \\
-        $$INSTALL_BASE/Octavo/Memory/Write_Enable.v \\
-        $$INSTALL_BASE/Octavo/Memory/Memory.v \\
-        $$INSTALL_BASE/Octavo/Addressing/Address_Adder.v \\
-        $$INSTALL_BASE/Octavo/Addressing/Addressing_Mapped_AB.v \\
-        $$INSTALL_BASE/Octavo/Addressing/Addressing_Mapped_D.v \\
-        $$INSTALL_BASE/Octavo/Addressing/Addressing_Thread_Number.v \\
-        $$INSTALL_BASE/Octavo/Addressing/Addressing.v \\
-        $$INSTALL_BASE/Octavo/Addressing/Address_Translation.v \\
-        $$INSTALL_BASE/Octavo/Addressing/Default_Offset.v \\
-        $$INSTALL_BASE/Octavo/Addressing/Increment_Adder.v \\
-        $$INSTALL_BASE/Octavo/Addressing/Increments.v \\
-        $$INSTALL_BASE/Octavo/Addressing/Programmed_Offsets.v \\
-        $$INSTALL_BASE/Octavo/Addressing/Write_Priority.v \\
-        $$INSTALL_BASE/Octavo/Addressing/Write_Synchronize.v \\
-        $$INSTALL_BASE/Octavo/Branching/Branch_Check_Mapped.v \\
-        $$INSTALL_BASE/Octavo/Branching/Branch_Check.v \\
-        $$INSTALL_BASE/Octavo/Branching/Branch_Condition.v \\
-        $$INSTALL_BASE/Octavo/Branching/Branch_Destination.v \\
-        $$INSTALL_BASE/Octavo/Branching/Branch_Folding.v \\
-        $$INSTALL_BASE/Octavo/Branching/Branching_Flags.v \\
-        $$INSTALL_BASE/Octavo/Branching/Branching_Thread_Number.v \\
-        $$INSTALL_BASE/Octavo/Branching/Branch_Origin.v \\
-        $$INSTALL_BASE/Octavo/Branching/Branch_Origin_Check.v \\
-        $$INSTALL_BASE/Octavo/Branching/Branch_Cancel.v \\
-        $$INSTALL_BASE/Octavo/Branching/Branch_Prediction.v \\
-        $$INSTALL_BASE/Octavo/Branching/Branch_Prediction_Enable.v \\
-        $$INSTALL_BASE/Octavo/Branching/OR_Reducer.v \\
-        $$INSTALL_BASE/Octavo/IO/EmptyFullBit.v \\
-        $$INSTALL_BASE/Octavo/IO/IO_Active.v \\
-        $$INSTALL_BASE/Octavo/IO/IO_All_Ready.v \\
-        $$INSTALL_BASE/Octavo/IO/IO_Check.v \\
-        $$INSTALL_BASE/Octavo/IO/IO_Read.v \\
-        $$INSTALL_BASE/Octavo/IO/IO_Write.v \\
-        $$INSTALL_BASE/Octavo/IO/Port_Active.v \\
+OCTAVO="$$INSTALL_BASE/Octavo/${octavo_files} \\
         $$INSTALL_BASE/Octavo/Octavo/Scalar.v \\
         $$INSTALL_BASE/Octavo/Octavo/SIMD.v \\
         ../${CPU_NAME}.v \\
@@ -314,6 +262,8 @@ rm vsim.wlf
     parameters["SIMD_default_bench"]    = SIMD_default_bench
     parameters["install_base"]          = install_base
     parameters["quartus_base_path"]     = quartus_base_path
+    parameters["octavo_files"]          = string.join(octavo_files.all_files, 
+                                                      " \\\n        $INSTALL_BASE/Octavo/")
     return test_bench_script_template.substitute(parameters)
 
 def main(parameters = {}):
